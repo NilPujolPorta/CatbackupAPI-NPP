@@ -5,7 +5,7 @@ from setuptools import setup
 
 versio = re.search(
     '^__version__\s*=\s*"(.*)"',
-    open('CatBackupAPI/CatbackupAPI-NPP.py').read(),
+    open('CatBackupAPI/CatbackupAPI_NPP.py').read(),
     re.M
     ).group(1)
 
@@ -39,6 +39,6 @@ setup(name='CatbackupAPI-NPP',
           "selenium"
       ],
 	entry_points = {
-        "console_scripts": ['CatbackupAPI-NPP = CatBackupAPI.CatbackupAPI-NPP:main']
+        "console_scripts": ['CatbackupAPI-NPP = CatBackupAPI.CatbackupAPI_NPP:main']
         },
       zip_safe=False)
