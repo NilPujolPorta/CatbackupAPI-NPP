@@ -4,7 +4,6 @@
 - Configuració de la base de dades a `config/config.yaml`
 - Logs de errors a `errorLogs/*txt`
 - Executar amb opcio -h per veure mes opcions i funcionalitats.
-- El fitxer compilar.bat transforma el .py en .pyc que es mes eficient i rapid.
 
 
 ## Estructura de la base de dades
@@ -16,6 +15,33 @@
 "host" URL de la interfaç web + /Admin/Login.aspx Per exemple https://catbackup.net/Admin/Login.aspx
 
 "clau" Clau de OPT de CatBackup
+```
+## Instal·lació
+
+- Utilitzant pip:
+
+  ```pip install CatbackupAPI-NPP```
+
+## Ús
+### Maneres d'execució del programa (ordenades per recomenades)
+- A la linea de commandes `catbackupAPI [opcions]`
+- ```python -m CatBackupAPI [opcions]```
+- ```./CatbackupAPI_NPP-runner [opcions] ```
+- Executar el fitxer `CatbackupAPI_NPP.py` o `CatbackupAPI_NPP.cpython-39.pyc` amb les opcions adients. Llavors les dades es guardaran a `dadesCatBackup.json`
+
+
+### Opcions
+```
+usage: CatbackupAPI_NPP.py [-h] [-q] [-v] [-g] [-w URL]
+
+Una API per a recullir informacio de la web de CatBackup.
+
+optional arguments:
+  -h, --help         show this help message and exit
+  -q, --quiet        Nomes mostra els errors i el missatge de acabada per pantalla.
+  -v, --versio       Mostra la versio
+  -g, --graphicUI    Mostra el navegador graficament.
+  -w URL, --web URL  Especificar la web de Catbackup a on accedir. Per defecte es l'aconsegueix de la basa de dades
 ```
 
 
