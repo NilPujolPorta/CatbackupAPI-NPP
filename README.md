@@ -22,6 +22,9 @@
 
   ```pip install CatbackupAPI-NPP```
 
+- Clonar el repositori
+```gh repo clone NilPujolPorta/CatbackupAPI-NPP```
+
 ## Ús
 ### Maneres d'execució del programa (ordenades per recomenades)
 - A la linea de commandes `catbackupAPI [opcions]`
@@ -32,16 +35,18 @@
 
 ### Opcions
 ```
-usage: CatbackupAPI_NPP.py [-h] [-q] [-v] [-g] [-w URL]
+usage: CatbackupAPI_NPP.cpython-39.pyc [-h] [-q] [-tr RUTA] [-g] [-v] [-w URL]
 
 Una API per a recullir informacio de la web de CatBackup.
 
 optional arguments:
-  -h, --help         show this help message and exit
-  -q, --quiet        Nomes mostra els errors i el missatge de acabada per pantalla.
-  -v, --versio       Mostra la versio
-  -g, --graphicUI    Mostra el navegador graficament.
-  -w URL, --web URL  Especificar la web de Catbackup a on accedir. Per defecte es l'aconsegueix de la basa de dades
+  -h, --help            show this help message and exit
+  -q, --quiet           Nomes mostra els errors i el missatge de acabada per pantalla.
+  -tr RUTA, --tesseractpath RUTA
+                        La ruta fins al fitxer tesseract.exe
+  -g, --graphicUI       Mostra el navegador graficament.
+  -v, --versio          Mostra la versio
+  -w URL, --web URL     Especificar la web de Catbackup a on accedir. Per defecte es l'aconsegueix de la basa de dades
 ```
 
 

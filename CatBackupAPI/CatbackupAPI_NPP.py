@@ -4,6 +4,7 @@ from datetime import datetime
 import datetime
 from os.path import exists
 import os
+
 import pyotp 
 from selenium import webdriver 
 from selenium.webdriver.chrome.options import Options
@@ -12,20 +13,29 @@ import pytesseract
 import argparse
 import mysql.connector
 import yaml
+import wget
 
-__version__ = "1.5.0"
+__version__ = "1.5.1"
 
 def main():
-	pytesseract.pytesseract.tesseract_cmd = r'tesseract\tesseract.exe'
+	ruta = os.path.dirname(os.path.abspath(__file__))
+	
 	parser = argparse.ArgumentParser(description='Una API per a recullir informacio de la web de CatBackup.')
 	parser.add_argument('-q', '--quiet', help='Nomes mostra els errors i el missatge de acabada per pantalla.', action="store_false")
-	parser.add_argument('-v', '--versio', help='Mostra la versio', action='version', version='CatBackupAPI-NPP vs1.5.0')
+	parser.add_argument('-tr','--tesseractpath', help='La ruta fins al fitxer tesseract.exe', default=ruta+'/tesseract/tesseract.exe', metavar='RUTA')
 	parser.add_argument('-g', '--graphicUI', help='Mostra el navegador graficament.', action="store_false")
+	parser.add_argument('-v', '--versio', help='Mostra la versio', action='version', version='CatBackupAPI-NPP v'+__version__)
+
+	conf = ruta+"/config/config.yaml"
+	if not(os.path.exists(ruta+"/config")):
+		os.mkdir(ruta+"/config")
+	if not(os.path.exists(ruta+"/errorLogs")):
+		os.mkdir(ruta+"/errorLogs")
+	if not(os.path.exists(ruta+"/chromedriver.exe")):
+		wget.download("https://github.com/NilPujolPorta/CatbackupAPI-NPP/blob/master/CatBackupAPI/chromedriver.exe?raw=true", ruta+"/chromedriver.exe")
 
 
-	if exists("config/config.yaml"):
-		configuracio = True
-	else:
+	if not(exists(conf)):
 		print("Emplena el fitxer de configuracio de Base de Dades a config/config.yaml")
 		article_info = [
 			{
@@ -37,10 +47,10 @@ def main():
 			}
 		]
 
-		with open("config/config.yaml", 'w') as yamlfile:
+		with open(conf, 'w') as yamlfile:
 			data = yaml.dump(article_info, yamlfile)
 
-	with open("config/config.yaml", "r") as yamlfile:
+	with open(conf, "r") as yamlfile:
 		data = yaml.load(yamlfile, Loader=yaml.FullLoader)
 
 	servidor = data[0]['BD']['host']
@@ -83,6 +93,17 @@ def main():
 
 	parser.add_argument('-w', '--web', help="Especificar la web de Catbackup a on accedir. Per defecte es l'aconsegueix de la basa de dades", default=resultatbd[0][2], metavar="URL")
 	args = parser.parse_args()
+	if not(os.path.exists(ruta+"/tesseract") and os.path.isfile(ruta+"/tesseract/tesseract.exe")):
+		os.mkdir(ruta+"/tesseract")
+		wget.download("https://github.com/NilPujolPorta/CatbackupAPI-NPP/blob/master/CatBackupAPI/tesseract-ocr-w64-setup-v5.0.0-rc1.20211030.exe?raw=true", ruta+"/tesseract-ocr-w64-setup-v5.0.0-rc1.20211030.exe")
+		print("=========================================================")
+		print("INSTALA EL TESSERACT EN LA CARPETA CatBackupAPI/tesseract")
+		print("=========================================================")
+		time.sleep(20)
+		os.popen(ruta+"/tesseract-ocr-w64-setup-v5.0.0-rc1.20211030.exe")
+		quit()
+
+	pytesseract.pytesseract.tesseract_cmd = (args.tesseractpath)
 
 	options = Options()
 	if args.graphicUI:
@@ -90,7 +111,7 @@ def main():
 		options.add_argument('--headless')
 		options.add_argument('--disable-gpu')
 		options.add_argument('window-size=1200x600')
-	browser = webdriver.Chrome(executable_path = "chromedriver.exe", chrome_options=options)
+	browser = webdriver.Chrome(executable_path = ruta+"/chromedriver.exe", options=options)
 
 	browser.get(args.web)
 
@@ -202,7 +223,7 @@ def main():
 			print("Error d'escriptura de json"+str(e))
 			now = datetime.datetime.now()
 			date_string = now.strftime('%Y-%m-%d--%H-%M-%S-json')
-			f = open("errorLogs/"+date_string+".txt",'w')
+			f = open(ruta+"/errorLogs/"+date_string+".txt",'w')
 			f.write("Error d'escriptura de json "+str(e))
 			f.close()
 	if not(args.quiet):

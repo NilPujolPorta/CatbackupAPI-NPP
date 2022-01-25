@@ -3,3 +3,4 @@
 /CatBackupAPI/dadesCatBackup.json
 /CatBackupAPI/errorLogs/*
 /CatBackupAPI/compilar.bat
+publish.bat
