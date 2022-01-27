@@ -15,9 +15,9 @@ import mysql.connector
 import yaml
 import wget
 
-__version__ = "1.5.1"
+__version__ = "1.5.2"
 
-def main():
+def main(args):
 	ruta = os.path.dirname(os.path.abspath(__file__))
 	
 	parser = argparse.ArgumentParser(description='Una API per a recullir informacio de la web de CatBackup.')
@@ -92,7 +92,7 @@ def main():
 	resultatbd = mycursor.fetchall()
 
 	parser.add_argument('-w', '--web', help="Especificar la web de Catbackup a on accedir. Per defecte es l'aconsegueix de la basa de dades", default=resultatbd[0][2], metavar="URL")
-	args = parser.parse_args()
+	args = parser.parse_args(args)
 	if not(os.path.exists(ruta+"/tesseract") and os.path.isfile(ruta+"/tesseract/tesseract.exe")):
 		os.mkdir(ruta+"/tesseract")
 		wget.download("https://github.com/NilPujolPorta/CatbackupAPI-NPP/blob/master/CatBackupAPI/tesseract-ocr-w64-setup-v5.0.0-rc1.20211030.exe?raw=true", ruta+"/tesseract-ocr-w64-setup-v5.0.0-rc1.20211030.exe")
