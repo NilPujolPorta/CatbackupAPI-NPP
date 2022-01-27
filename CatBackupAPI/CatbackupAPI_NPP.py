@@ -15,13 +15,14 @@ import mysql.connector
 import yaml
 import wget
 
-__version__ = "1.5.2"
+__version__ = "1.5.3"
 
 def main(args):
 	ruta = os.path.dirname(os.path.abspath(__file__))
 	
 	parser = argparse.ArgumentParser(description='Una API per a recullir informacio de la web de CatBackup.')
 	parser.add_argument('-q', '--quiet', help='Nomes mostra els errors i el missatge de acabada per pantalla.', action="store_false")
+	parser.add_argument('--json-file', help='El directori a on es guardara el fitxer de dades json. Per defecte es:'+ruta, default=ruta, metavar='RUTA')
 	parser.add_argument('-tr','--tesseractpath', help='La ruta fins al fitxer tesseract.exe', default=ruta+'/tesseract/tesseract.exe', metavar='RUTA')
 	parser.add_argument('-g', '--graphicUI', help='Mostra el navegador graficament.', action="store_false")
 	parser.add_argument('-v', '--versio', help='Mostra la versio', action='version', version='CatBackupAPI-NPP v'+__version__)
@@ -93,8 +94,9 @@ def main(args):
 
 	parser.add_argument('-w', '--web', help="Especificar la web de Catbackup a on accedir. Per defecte es l'aconsegueix de la basa de dades", default=resultatbd[0][2], metavar="URL")
 	args = parser.parse_args(args)
-	if not(os.path.exists(ruta+"/tesseract") and os.path.isfile(ruta+"/tesseract/tesseract.exe")):
+	if not(os.path.exists(ruta+"/tesseract")):
 		os.mkdir(ruta+"/tesseract")
+	if not(os.path.isfile(ruta+"/tesseract/tesseract.exe")):
 		wget.download("https://github.com/NilPujolPorta/CatbackupAPI-NPP/blob/master/CatBackupAPI/tesseract-ocr-w64-setup-v5.0.0-rc1.20211030.exe?raw=true", ruta+"/tesseract-ocr-w64-setup-v5.0.0-rc1.20211030.exe")
 		print("=========================================================")
 		print("INSTALA EL TESSERACT EN LA CARPETA CatBackupAPI/tesseract")
@@ -214,10 +216,10 @@ def main(args):
 		x = x+1
 
 	dictionary = {'Correctes':Lcorrectes, 'Erronis':Lerronis, 'Atrasats':Latrasats, 'Advertencies':Ladvertencies}
-	if exists("dadesCatBackup.json") == True:
-			os.remove("dadesCatBackup.json")
+	if exists(args.json_file+"/dadesCatBackup.json") == True:
+			os.remove(args.json_file+"/dadesCatBackup.json")
 	try:
-		with open("dadesCatBackup.json", 'w') as f:
+		with open(args.json_file+"/dadesCatBackup.json", 'w') as f:
 			json.dump(dictionary, f, indent = 4)
 	except Exception as e:
 			print("Error d'escriptura de json"+str(e))
