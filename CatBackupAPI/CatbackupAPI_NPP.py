@@ -15,14 +15,14 @@ import mysql.connector
 import yaml
 import wget
 
-__version__ = "1.5.3"
+__version__ = "1.5.4"
 
-def main(args):
+def main(args=None):
 	ruta = os.path.dirname(os.path.abspath(__file__))
-	
+	rutaJson = ruta+"/dadesCatBackup.json"
 	parser = argparse.ArgumentParser(description='Una API per a recullir informacio de la web de CatBackup.')
 	parser.add_argument('-q', '--quiet', help='Nomes mostra els errors i el missatge de acabada per pantalla.', action="store_false")
-	parser.add_argument('--json-file', help='El directori a on es guardara el fitxer de dades json. Per defecte es:'+ruta, default=ruta, metavar='RUTA')
+	parser.add_argument('--json-file', help='La ruta(fitxer inclos) a on es guardara el fitxer de dades json. Per defecte es:'+rutaJson, default=rutaJson, metavar='RUTA')
 	parser.add_argument('-tr','--tesseractpath', help='La ruta fins al fitxer tesseract.exe', default=ruta+'/tesseract/tesseract.exe', metavar='RUTA')
 	parser.add_argument('-g', '--graphicUI', help='Mostra el navegador graficament.', action="store_false")
 	parser.add_argument('-v', '--versio', help='Mostra la versio', action='version', version='CatBackupAPI-NPP v'+__version__)
@@ -34,6 +34,7 @@ def main(args):
 		os.mkdir(ruta+"/errorLogs")
 	if not(os.path.exists(ruta+"/chromedriver.exe")):
 		wget.download("https://github.com/NilPujolPorta/CatbackupAPI-NPP/blob/master/CatBackupAPI/chromedriver.exe?raw=true", ruta+"/chromedriver.exe")
+		print()
 
 
 	if not(exists(conf)):
@@ -98,6 +99,7 @@ def main(args):
 		os.mkdir(ruta+"/tesseract")
 	if not(os.path.isfile(ruta+"/tesseract/tesseract.exe")):
 		wget.download("https://github.com/NilPujolPorta/CatbackupAPI-NPP/blob/master/CatBackupAPI/tesseract-ocr-w64-setup-v5.0.0-rc1.20211030.exe?raw=true", ruta+"/tesseract-ocr-w64-setup-v5.0.0-rc1.20211030.exe")
+		print()
 		print("=========================================================")
 		print("INSTALA EL TESSERACT EN LA CARPETA CatBackupAPI/tesseract")
 		print("=========================================================")
@@ -216,10 +218,10 @@ def main(args):
 		x = x+1
 
 	dictionary = {'Correctes':Lcorrectes, 'Erronis':Lerronis, 'Atrasats':Latrasats, 'Advertencies':Ladvertencies}
-	if exists(args.json_file+"/dadesCatBackup.json") == True:
-			os.remove(args.json_file+"/dadesCatBackup.json")
+	if exists(args.json_file) == True:
+			os.remove(args.json_file)
 	try:
-		with open(args.json_file+"/dadesCatBackup.json", 'w') as f:
+		with open(args.json_file, 'w') as f:
 			json.dump(dictionary, f, indent = 4)
 	except Exception as e:
 			print("Error d'escriptura de json"+str(e))

@@ -40,13 +40,13 @@ usage: CatbackupAPI_NPP.cpython-39.pyc [-h] [-q] [-tr RUTA] [-g] [-v] [-w URL]
 Una API per a recullir informacio de la web de CatBackup.
 
 optional arguments:
-  -h, --help            show this help message and exit
-  -q, --quiet           Nomes mostra els errors i el missatge de acabada per pantalla.
-  -tr RUTA, --tesseractpath RUTA
-                        La ruta fins al fitxer tesseract.exe
-  -g, --graphicUI       Mostra el navegador graficament.
-  -v, --versio          Mostra la versio
-  -w URL, --web URL     Especificar la web de Catbackup a on accedir. Per defecte es l'aconsegueix de la basa de dades
+  -h, --help                      show this help message and exit
+  -q, --quiet                     Nomes mostra els errors i el missatge de acabada per pantalla.
+  --json-file RUTA                La ruta(fitxer inclos) a on es guardara el fitxer de dades json. Per defecte es: dadesCatBackup.json
+  -tr RUTA, --tesseractpath RUTA  La ruta fins al fitxer tesseract.exe
+  -g, --graphicUI                 Mostra el navegador graficament.
+  -v, --versio                    Mostra la versio
+  -w URL, --web URL               Especificar la web de Catbackup a on accedir. Per defecte es l'aconsegueix de la basa de dades
 ```
 
 
