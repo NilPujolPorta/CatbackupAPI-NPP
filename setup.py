@@ -36,7 +36,8 @@ setup(name='CatbackupAPI-NPP',
           "opencv-python",
           "pyotp",
           "pytesseract",
-          "selenium"
+          "selenium",
+          "wget"
       ],
 	entry_points = {
         "console_scripts": ['CatbackupAPI-NPP = CatBackupAPI.CatbackupAPI_NPP:main']

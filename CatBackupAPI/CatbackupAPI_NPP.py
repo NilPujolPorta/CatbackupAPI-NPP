@@ -16,7 +16,7 @@ import mysql.connector
 import yaml
 import wget
 
-__version__ = "1.5.5"
+__version__ = "1.5.6"
 
 def main(args=None):
 	ruta = os.path.dirname(os.path.abspath(__file__))
