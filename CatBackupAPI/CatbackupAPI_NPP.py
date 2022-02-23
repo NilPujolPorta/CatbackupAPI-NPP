@@ -1,4 +1,5 @@
 import json
+from pickle import NONE
 import time
 from datetime import datetime
 import datetime
@@ -15,7 +16,7 @@ import mysql.connector
 import yaml
 import wget
 
-__version__ = "1.5.4"
+__version__ = "1.5.5"
 
 def main(args=None):
 	ruta = os.path.dirname(os.path.abspath(__file__))
@@ -25,6 +26,7 @@ def main(args=None):
 	parser.add_argument('--json-file', help='La ruta(fitxer inclos) a on es guardara el fitxer de dades json. Per defecte es:'+rutaJson, default=rutaJson, metavar='RUTA')
 	parser.add_argument('-tr','--tesseractpath', help='La ruta fins al fitxer tesseract.exe', default=ruta+'/tesseract/tesseract.exe', metavar='RUTA')
 	parser.add_argument('-g', '--graphicUI', help='Mostra el navegador graficament.', action="store_false")
+	parser.add_argument('--portable-chrome-path', help="La ruta del executable de chrome", default=NONE, metavar="RUTA")
 	parser.add_argument('-v', '--versio', help='Mostra la versio', action='version', version='CatBackupAPI-NPP v'+__version__)
 
 	conf = ruta+"/config/config.yaml"
@@ -88,7 +90,7 @@ def main(args=None):
 			mycursor.execute("CREATE TABLE credencials (usuari VARCHAR(255), contassenya VARCHAR(255), host VARCHAR(255));")
 		except:
 			print("Login BDD incorrecte")
-			quit()
+			return
 
 	mycursor.execute("SELECT * FROM credencials")
 	resultatbd = mycursor.fetchall()
@@ -97,24 +99,29 @@ def main(args=None):
 	args = parser.parse_args(args)
 	if not(os.path.exists(ruta+"/tesseract")):
 		os.mkdir(ruta+"/tesseract")
-	if not(os.path.isfile(ruta+"/tesseract/tesseract.exe")):
+	if os.path.exists("C:\Program Files\Tesseract-OCR"):
+		pytesseract.pytesseract.tesseract_cmd =("C:\\Program Files\\Tesseract-OCR\\tesseract.exe")
+	elif not(os.path.exists(args.tesseractpath)):
 		wget.download("https://github.com/NilPujolPorta/CatbackupAPI-NPP/blob/master/CatBackupAPI/tesseract-ocr-w64-setup-v5.0.0-rc1.20211030.exe?raw=true", ruta+"/tesseract-ocr-w64-setup-v5.0.0-rc1.20211030.exe")
 		print()
 		print("=========================================================")
-		print("INSTALA EL TESSERACT EN LA CARPETA CatBackupAPI/tesseract")
+		print("INSTALA EL TESSERACT EN LA CARPETA CatBackupAPI/tesseract")##revisar
 		print("=========================================================")
 		time.sleep(20)
 		os.popen(ruta+"/tesseract-ocr-w64-setup-v5.0.0-rc1.20211030.exe")
-		quit()
-
-	pytesseract.pytesseract.tesseract_cmd = (args.tesseractpath)
+		return
+	else:
+		pytesseract.pytesseract.tesseract_cmd = (args.tesseractpath)
 
 	options = Options()
+	if args.portable_chrome_path != NONE:
+		options.binary_location = args.portable_chrome_path
 	if args.graphicUI:
 		options.headless = True
 		options.add_argument('--headless')
 		options.add_argument('--disable-gpu')
 		options.add_argument('window-size=1200x600')
+		options.add_argument('log-level=1')#INFO = 0, WARNING = 1, LOG_ERROR = 2, LOG_FATAL = 3.
 	browser = webdriver.Chrome(executable_path = ruta+"/chromedriver.exe", options=options)
 
 	browser.get(args.web)
