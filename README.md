@@ -7,6 +7,7 @@
 
 
 ## Estructura de la base de dades
+En una Base de dades que es digui "catbackup" un taula anomenada "credencials":
 ```
 "usuari" Usuari amb permisos d'administrador del CatBackup
 
