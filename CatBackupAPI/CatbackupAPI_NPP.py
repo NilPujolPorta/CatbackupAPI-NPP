@@ -16,7 +16,7 @@ import mysql.connector
 import yaml
 import wget
 
-__version__ = "1.5.6"
+__version__ = "1.5.7"
 
 def main(args=None):
 	ruta = os.path.dirname(os.path.abspath(__file__))
@@ -94,12 +94,15 @@ def main(args=None):
 
 	mycursor.execute("SELECT * FROM credencials")
 	resultatbd = mycursor.fetchall()
-
+	patata = True
 	parser.add_argument('-w', '--web', help="Especificar la web de Catbackup a on accedir. Per defecte es l'aconsegueix de la basa de dades", default=resultatbd[0][2], metavar="URL")
 	args = parser.parse_args(args)
 	if not(os.path.exists(ruta+"/tesseract")):
 		os.mkdir(ruta+"/tesseract")
-	if os.path.exists("C:\Program Files\Tesseract-OCR"):
+	else:
+		pytesseract.pytesseract.tesseract_cmd =(ruta+"/tesseract/tesseract.exe")
+		patata = False
+	if os.path.exists("C:\Program Files\Tesseract-OCR") and patata:
 		pytesseract.pytesseract.tesseract_cmd =("C:\\Program Files\\Tesseract-OCR\\tesseract.exe")
 	elif not(os.path.exists(args.tesseractpath)):
 		wget.download("https://github.com/NilPujolPorta/CatbackupAPI-NPP/blob/master/CatBackupAPI/tesseract-ocr-w64-setup-v5.0.0-rc1.20211030.exe?raw=true", ruta+"/tesseract-ocr-w64-setup-v5.0.0-rc1.20211030.exe")
