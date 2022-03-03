@@ -16,7 +16,7 @@ import mysql.connector
 import yaml
 import wget
 
-__version__ = "1.6.0"
+__version__ = "1.6.1"
 
 def main(args=None):
 	ruta = os.path.dirname(os.path.abspath(__file__))
@@ -118,9 +118,9 @@ def main(args=None):
 	if args.portable_chrome_path != NONE:
 		options.binary_location = args.portable_chrome_path
 	if args.graphicUI:
-		#options.headless = True
-		#options.add_argument('--headless')
-		#options.add_argument('--disable-gpu')
+		options.headless = True
+		options.add_argument('--headless')
+		options.add_argument('--disable-gpu')
 		options.add_argument('window-size=1200x600')
 		options.add_argument('log-level=1')#INFO = 0, WARNING = 1, LOG_ERROR = 2, LOG_FATAL = 3.
 	browser = webdriver.Chrome(executable_path = ruta+"/chromedriver.exe", options=options)
