@@ -1,6 +1,7 @@
 /CatBackupAPI/tesseract/*
 /CatBackupAPI/screenshot.png
-/CatBackupAPI/dadesCatBackup.json
+/CatBackupAPI/dadesCatBackup.json1.json
+/CatBackupAPI/dadesCatBackup.json0.json
 /CatBackupAPI/errorLogs/*
 /CatBackupAPI/compilar.bat
 publish.bat

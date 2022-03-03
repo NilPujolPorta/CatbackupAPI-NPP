@@ -16,7 +16,7 @@ import mysql.connector
 import yaml
 import wget
 
-__version__ = "1.5.7"
+__version__ = "1.6.0"
 
 def main(args=None):
 	ruta = os.path.dirname(os.path.abspath(__file__))
@@ -28,7 +28,7 @@ def main(args=None):
 	parser.add_argument('-g', '--graphicUI', help='Mostra el navegador graficament.', action="store_false")
 	parser.add_argument('--portable-chrome-path', help="La ruta del executable de chrome", default=NONE, metavar="RUTA")
 	parser.add_argument('-v', '--versio', help='Mostra la versio', action='version', version='CatBackupAPI-NPP v'+__version__)
-
+	args = parser.parse_args(args)
 	conf = ruta+"/config/config.yaml"
 	if not(os.path.exists(ruta+"/config")):
 		os.mkdir(ruta+"/config")
@@ -93,10 +93,8 @@ def main(args=None):
 			return
 
 	mycursor.execute("SELECT * FROM credencials")
-	resultatbd = mycursor.fetchall()
+	resultatbd2 = mycursor.fetchall()
 	patata = True
-	parser.add_argument('-w', '--web', help="Especificar la web de Catbackup a on accedir. Per defecte es l'aconsegueix de la basa de dades", default=resultatbd[0][2], metavar="URL")
-	args = parser.parse_args(args)
 	if not(os.path.exists(ruta+"/tesseract")):
 		os.mkdir(ruta+"/tesseract")
 	else:
@@ -120,128 +118,132 @@ def main(args=None):
 	if args.portable_chrome_path != NONE:
 		options.binary_location = args.portable_chrome_path
 	if args.graphicUI:
-		options.headless = True
-		options.add_argument('--headless')
-		options.add_argument('--disable-gpu')
+		#options.headless = True
+		#options.add_argument('--headless')
+		#options.add_argument('--disable-gpu')
 		options.add_argument('window-size=1200x600')
 		options.add_argument('log-level=1')#INFO = 0, WARNING = 1, LOG_ERROR = 2, LOG_FATAL = 3.
 	browser = webdriver.Chrome(executable_path = ruta+"/chromedriver.exe", options=options)
+	lineabd = 0
+	for resultatbd in resultatbd2:
+		browser.get(resultatbd[2])
 
-	browser.get(args.web)
+		find_user = browser.find_element(by='id', value="txtLogin")
+		find_user.send_keys(resultatbd[0])
 
-	find_user = browser.find_element(by='id', value="txtLogin")
-	find_user.send_keys(resultatbd[0][0])
+		find_passwd = browser.find_element(by='id', value="txtPassword")
+		find_passwd.send_keys(resultatbd[1])
 
-	find_passwd = browser.find_element(by='id', value="txtPassword")
-	find_passwd.send_keys(resultatbd[0][1])
-
-	find_login = browser.find_element(by='id', value="btnLogin")
-	find_login.click()
-
-
-	time.sleep(5)
+		find_login = browser.find_element(by='id', value="btnLogin")
+		find_login.click()
 
 
-	find_key = browser.find_element(by='id', value="txtSecretCode")
-	totp = pyotp.TOTP(resultatbd[0][3])
-	find_key.send_keys(totp.now())
-
-	find_login2 = browser.find_element(by='id', value="btnLogin")
-	find_login2.click()
-
-	time.sleep(20)
+		time.sleep(5)
 
 
-	browser.save_screenshot('screenshot.png')
-	browser.quit()
+		find_key = browser.find_element(by='id', value="txtSecretCode")
+		totp = pyotp.TOTP(resultatbd[3])
+		find_key.send_keys(totp.now())
+
+		find_login2 = browser.find_element(by='id', value="btnLogin")
+		find_login2.click()
+
+		time.sleep(20)
 
 
-	img = cv2.imread('screenshot.png')
-	text = pytesseract.image_to_string(img)
-
-	if os.path.exists("screenshot.png"):
-		os.remove("screenshot.png")
-	else:
-		print("The file does not exist")
-
-	x = text.find("Success: ")
-	if x == -1:
-		x = text.find("success: ")
-	if x == -1:
-		correctes = 0
-	else:
-		y= x+9
-		x= y+2
-		correctes = int(text[y:x])
-
-	x = text.find("Failed: ")
-	if x == -1:
-		erronis = 0
-	else:
-		y= x+8
-		x= y+2
-		erronis = int(text[y:x])
-
-	x = text.find("Overdue: ")
-	if x == -1:
-		atrasats = 0
-	else:
-		y= x+9
-		x= y+2
-		atrasats = int(text[y:x])
-
-	x = text.find("Warning: ")
-	if x == -1:
-		advertencies = 0
-	else:
-		y= x+9
-		x= y+2
-		advertencies = int(text[y:x])
-
-	if args.quiet:
-		print("Correctes: "+str(correctes))
-		print("Erronis: "+str(erronis))
-		print("Atrasats: "+str(atrasats))
-		print("Advertencies: "+str(advertencies))
-		print("total: "+str(correctes+erronis+atrasats+advertencies))
+		browser.save_screenshot('screenshot.png')
+		
 
 
-	Lcorrectes = []
-	x = 0
-	while x < correctes:
-		Lcorrectes.append({"Status":"Correctes"})
-		x = x+1
-	Lerronis = []
-	x = 0
-	while x < erronis:
-		Lerronis.append({"Status":"Erronis"})
-		x = x+1
-	Latrasats = []
-	x = 0
-	while x < atrasats:
-		Latrasats.append({"Status":"Atrasats"})
-		x = x+1
-	Ladvertencies = []
-	x = 0
-	while x < advertencies:
-		Ladvertencies.append({"Status":"Warning"})
-		x = x+1
+		img = cv2.imread('screenshot.png')
+		text = pytesseract.image_to_string(img)
 
-	dictionary = {'Correctes':Lcorrectes, 'Erronis':Lerronis, 'Atrasats':Latrasats, 'Advertencies':Ladvertencies}
-	if exists(args.json_file) == True:
-			os.remove(args.json_file)
-	try:
-		with open(args.json_file, 'w') as f:
-			json.dump(dictionary, f, indent = 4)
-	except Exception as e:
-			print("Error d'escriptura de json"+str(e))
-			now = datetime.datetime.now()
-			date_string = now.strftime('%Y-%m-%d--%H-%M-%S-json')
-			f = open(ruta+"/errorLogs/"+date_string+".txt",'w')
-			f.write("Error d'escriptura de json "+str(e))
-			f.close()
+		if os.path.exists("screenshot.png"):
+			os.remove("screenshot.png")
+		else:
+			print("The file does not exist")
+
+		x = text.find("Success: ")
+		if x == -1:
+			x = text.find("success: ")
+		if x == -1:
+			correctes = 0
+		else:
+			y= x+9
+			x= y+2
+			correctes = int(text[y:x])
+
+		x = text.find("Failed: ")
+		if x == -1:
+			erronis = 0
+		else:
+			y= x+8
+			x= y+2
+			erronis = int(text[y:x])
+
+		x = text.find("Overdue: ")
+		if x == -1:
+			atrasats = 0
+		else:
+			y= x+9
+			x= y+2
+			atrasats = int(text[y:x])
+
+		x = text.find("Warning: ")
+		if x == -1:
+			advertencies = 0
+		else:
+			y= x+9
+			x= y+2
+			advertencies = int(text[y:x])
+
+		if args.quiet:
+			print("Correctes: "+str(correctes))
+			print("Erronis: "+str(erronis))
+			print("Atrasats: "+str(atrasats))
+			print("Advertencies: "+str(advertencies))
+			print("total: "+str(correctes+erronis+atrasats+advertencies))
+
+
+		Lcorrectes = []
+		x = 0
+		while x < correctes:
+			Lcorrectes.append({"Status":"Correctes"})
+			x = x+1
+		Lerronis = []
+		x = 0
+		while x < erronis:
+			Lerronis.append({"Status":"Erronis"})
+			x = x+1
+		Latrasats = []
+		x = 0
+		while x < atrasats:
+			Latrasats.append({"Status":"Atrasats"})
+			x = x+1
+		Ladvertencies = []
+		x = 0
+		while x < advertencies:
+			Ladvertencies.append({"Status":"Warning"})
+			x = x+1
+
+		dictionary = {'Correctes':Lcorrectes, 'Erronis':Lerronis, 'Atrasats':Latrasats, 'Advertencies':Ladvertencies}
+		if exists(args.json_file+str(lineabd)+".json") == True:
+				os.remove(args.json_file+str(lineabd)+".json")
+		try:
+			with open(args.json_file+str(lineabd)+".json", 'w') as f:
+				json.dump(dictionary, f, indent = 4)
+		except Exception as e:
+				print("Error d'escriptura de json"+str(e))
+				now = datetime.datetime.now()
+				date_string = now.strftime('%Y-%m-%d--%H-%M-%S-json')
+				f = open(ruta+"/errorLogs/"+date_string+".txt",'w')
+				f.write("Error d'escriptura de json "+str(e))
+				f.close()
+		lineabd += 1
+		time.sleep(10)
 	if not(args.quiet):
 		print("Done")
+
 
 if __name__ =='__main__':
     main()
