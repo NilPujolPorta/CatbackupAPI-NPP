@@ -16,7 +16,7 @@ import mysql.connector
 import yaml
 import wget
 
-__version__ = "1.6.1"
+__version__ = "1.6.2"
 
 def main(args=None):
 	ruta = os.path.dirname(os.path.abspath(__file__))
@@ -38,7 +38,7 @@ def main(args=None):
 		wget.download("https://github.com/NilPujolPorta/CatbackupAPI-NPP/blob/master/CatBackupAPI/chromedriver.exe?raw=true", ruta+"/chromedriver.exe")
 		print()
 
-
+	#Inici BD
 	if not(exists(conf)):
 		print("Emplena el fitxer de configuracio de Base de Dades a config/config.yaml")
 		article_info = [
@@ -94,6 +94,7 @@ def main(args=None):
 
 	mycursor.execute("SELECT * FROM credencials")
 	resultatbd2 = mycursor.fetchall()
+	#Fin BD
 	patata = True
 	if not(os.path.exists(ruta+"/tesseract")):
 		os.mkdir(ruta+"/tesseract")
@@ -118,9 +119,9 @@ def main(args=None):
 	if args.portable_chrome_path != NONE:
 		options.binary_location = args.portable_chrome_path
 	if args.graphicUI:
-		options.headless = True
-		options.add_argument('--headless')
-		options.add_argument('--disable-gpu')
+		#options.headless = True
+		#options.add_argument('--headless')
+		#options.add_argument('--disable-gpu')
 		options.add_argument('window-size=1200x600')
 		options.add_argument('log-level=1')#INFO = 0, WARNING = 1, LOG_ERROR = 2, LOG_FATAL = 3.
 	browser = webdriver.Chrome(executable_path = ruta+"/chromedriver.exe", options=options)
@@ -150,7 +151,7 @@ def main(args=None):
 
 		time.sleep(20)
 
-
+		#"/html/body/div[1]/form/div[3]/div[2]/div/div[1]/div[1]/div/div[1]/div/div/div/div/div[3]/section[1]/div/div[3]/span/div[1]/text()"
 		browser.save_screenshot('screenshot.png')
 		
 
@@ -174,6 +175,8 @@ def main(args=None):
 			correctes = int(text[y:x])
 
 		x = text.find("Failed: ")
+		if x == -1:
+			x = text.find("Foiled: ")
 		if x == -1:
 			erronis = 0
 		else:
